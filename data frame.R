@@ -20,24 +20,57 @@ head(dataiitb)
 write.csv(dataiitb, './data/dataiitb.csv') #subdirectory data in current repository
 #find properties of data like 
 #first few and last few rows
+head(dataiitb)
+tail(dataiitb)
 #dimensions
+dim(dataiitb)
 #no of rows and columns
-#summary
-#structure
-#class of data
+nrow(dataiitb);ncol(dataiitb)
 
+#summary
+summary(dataiitb)
+#structure
+str(dataiitb)
+#class of data
+class(dataiitb)
+#import
+data2=read.csv('https://raw.githubusercontent.com/dupadhyaya/hheanalytics/master/data/dataiitb.csv')
+data2
 #find gender mean of marks1 and marks2
+
+library(dplyr)
+data2%>%group_by(gender) %>% summarise(meanM1=mean(marks1),meanM2=mean(marks2))
+data2%>%group_by(gender,course) %>% summarise(meanM1=mean(marks1),meanM2=mean(marks2)),
+minA=min(age),
+sdA=sd(age)
 
 #arrange the data in the order of marks1
 
 #who are the top 2 students from each gender from marks of subject2
+data2%>%group_by(gender)%>% arrange(gender,marks2)%>% top_n(2,marks2)
 
 #make a barplot gender distribution
+barplot(height=c(10,20))
+table(data2$gender)
+barplot(height=table(data2$gender),col=1:2)
+barplot(height=table(data2$course))
+hist(data2$marks1,breaks=5,col=1:5)
+plot(density(data2$marks1))# to see whether the data is normally distributed
 
 #create a linear model of predicting marks1 from age
 
-#create a logistic model to predict passfail from marks1, marks2, gender
+fit1=lm(marks1~age,data=data2)
+summary(fit1)
 
+#create a logistic model to predict passfail from marks1, marks2, gender
+fit2=glm(passfail~marks1+marks2+gender+course,data=data2,family='binomial')
+summary(fit2)
+#clustering
+fit5=kmeans(data2[,c('age','marks1','marks2')],centers=4)
+fit5$centers
 #create a decision tree using previous case of logistic model. Predict passfail for sample case of gender, marks1, marks2
+fit3=rpart(passfail~marks1+marks2+gender,data=data2,method='class')
+summary(fit3)
+rpart.plot(fit3)
 
 #create a decision tree - regression model : predict age on gender, marks1, marks2
